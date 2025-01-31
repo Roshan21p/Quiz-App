@@ -22,9 +22,7 @@ function Layout({ children }) {
       </nav>
 
       {/* Main Content */}
-      <main className="flex-grow">
-        {children}
-      </main>
+      <main className="flex-grow">{children}</main>
 
       {/* Footer */}
       <footer className="bg-gray-300 py-4 min-v-[10vh]">
