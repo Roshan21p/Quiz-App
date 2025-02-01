@@ -37,6 +37,17 @@ function Result() {
     navigate('/quiz')
   }
 
+    // Dynamic score message based on correct answers percentage
+    const percentage = (correctAnswers / totalQuestions) * 100
+    let scoreMessage = ''
+    if (percentage >= 80) {
+      scoreMessage = 'Excellent! 🎉 You aced it!'
+    } else if (percentage >= 50) {
+      scoreMessage = 'Good job! 👍 You passed!'
+    } else {
+      scoreMessage = 'Keep trying! 💪 You can do better!'
+    }
+
   return (
     <div className="flex mx-auto flex-col p-4 items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white">
       <div className="bg-white text-black p-8 rounded-xl shadow-xl w-full sm:w-3/4 lg:w-1/3 text-center">
@@ -44,18 +55,23 @@ function Result() {
           🎉 Quiz Result 🎉
         </h2>
 
-        {/* Score Progress Bar */}
-        <div className="w-full bg-gray-200 rounded-full h-4 mt-4 mb-6">
+          {/* Score Progress Bar */}
+          <div className="w-full bg-gray-200 rounded-full h-4 mt-4 mb-6">
           <div
             className="bg-green-500 h-4 rounded-full transition-all duration-500"
-            style={{ width: `${(correctAnswers / totalQuestions) * 100}%` }}
+            style={{ width: `${percentage}%` }}
           ></div>
         </div>
 
+        {/* Dynamic Message Based on Score */}
         <p className="text-xl font-semibold">
+          {scoreMessage}
+        </p>
+
+        <p className="text-xl mt-2 font-semibold">
           Total Score: <span className="font-bold text-blue-600">{score}</span>
         </p>
-        <p className="text-lg mt-2">
+        <p className="text-lg mt-2 font-semibold">
           Total Questions: <span className="font-bold">{totalQuestions}</span>
         </p>
         <p className="text-green-600 font-bold mt-2">

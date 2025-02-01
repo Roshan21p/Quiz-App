@@ -12,8 +12,13 @@ function Quiz() {
   const [score, setScore] = useState(0)
   const [selectedAnswers, setSelectedAnswers] = useState({})
   const [isLoading, setIsLoading] = useState(true)
-  console.log('questions', questions)
+  const [timeLeft, setTimeLeft] = useState(600) // 10 minutes in seconds
 
+  function formatTime(seconds){
+    const minutes = Math.floor(seconds/60)
+    const remainingSeconds = seconds % 60
+    return `${minutes < 10 ? `0${minutes}` : minutes}:${remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds}`
+  }
   useEffect(() => {
     const fetchQuizData = async () => {
       try {
@@ -51,7 +56,28 @@ function Quiz() {
       setSelectedAnswers(savedProgress.selectedAnswers || {})
       setScore(savedProgress.score || 0)
     }
+
+    const storedTime = JSON.parse(sessionStorage.getItem('quizTime'));
+    if(storedTime) {
+      setTimeLeft(storedTime)
+    }
   }, [])
+
+  useEffect(() => {
+    if(timeLeft === 0){
+      sessionStorage.removeItem('quizTime')
+      navigate('/result');
+    } else{
+      // save time left in session storage
+      sessionStorage.setItem('quizTime', JSON.stringify(timeLeft));
+      const timer = setInterval(() => {
+        setTimeLeft((prevTime) => prevTime - 1)
+      }, 1000)
+
+      // Cleanup the interval on component unmount
+     return () => clearInterval(timer)
+    }
+  },[timeLeft]);
 
   function handleAnswer(selectedOption) {
     const questionId = questions[currentQuestionIndex].id
@@ -109,6 +135,7 @@ function Quiz() {
   return (
     <div className="mx-auto px-2 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white min-h-screen">
       <div className="bg-white text-black text-lg py-4 rounded-lg shadow-lg w-full sm:w-3/4 lg:w-1/2 text-center">
+      <div className="text-xl font-semibold mb-4">Time Left: {formatTime(timeLeft)}</div>
         {questions.length > 0 && (
           <>
             <QuestionCard

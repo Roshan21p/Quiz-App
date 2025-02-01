@@ -6,7 +6,7 @@ function Layout({ children }) {
     <div className="flex flex-col">
       {/* Navbar */}
       <nav className="bg-white drop-shadow-lg">
-        <div className="container  mx-auto px-2  md:px-12 py-4 flex justify-between items-center">
+        <div className=" mx-auto px-2  md:px-12 py-2 flex justify-between items-center">
           {/* Logo & App Name */}
           <Link to="/" className="flex items-center space-x-3">
             <img

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PrevNextButtons from '../Components/PrevNextButtons'
+import Confetti from 'react-confetti'
+
 
 function Review() {
   const navigate = useNavigate()
@@ -12,9 +14,9 @@ function Review() {
     const storedQuestions = JSON.parse(sessionStorage.getItem('quizQuestions'))
     const savedProgress = JSON.parse(sessionStorage.getItem('quizProgress'))
 
-    if (storedQuestions && savedProgress) {
+    if (storedQuestions || savedProgress) {
       setQuestions(storedQuestions)
-      setSelectedAnswers(savedProgress.selectedAnswers || {})
+      setSelectedAnswers(savedProgress?.selectedAnswers || {})
     }
   }, [])
 
@@ -40,10 +42,24 @@ function Review() {
 
   const currentQuestion = questions[currentQuestionIndex]
   const userSelectedOption = selectedAnswers[currentQuestion.id] // User's selected answer
+  const isCorrect = userSelectedOption?.is_correct || false
 
   return (
     <div className="mx-auto  px-2 flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-      <div className="bg-white text-black text-lg py-2 px-2  rounded-lg shadow-lg w-full sm:w-3/4 lg:w-1/2 text-center">
+     {/* Container for Confetti */}
+     <div className="relative w-full sm:w-3/4 lg:w-1/2">
+        {isCorrect && (
+          <div className="absolute inset-0 flex  items-center justify-center overflow-hidden">
+            <Confetti
+              width={window.innerWidth * 0.75} 
+              height={window.innerHeight * 0.75} 
+              numberOfPieces={300}
+              recycle={false}
+            /> 
+          </div>
+        )}
+
+        <div className="bg-white text-black text-lg py-2 px-2 rounded-lg shadow-lg w-full text-center">
         <h2 className="text-2xl font-bold text-indigo-700 mb-4">
           Review Answers
         </h2>
@@ -65,7 +81,7 @@ function Review() {
             return (
               <div
                 key={option.id}
-                className={`flex items-center py-2 px-4 rounded-lg border border-indigo-500 shadow-md
+                className={`flex items-center py-2 px-1 sm:px-4 rounded-lg border border-indigo-500 shadow-md
                 ${isCorrect ? 'bg-green-400 text-white' : ''}
                 ${isWrong ? 'bg-red-500 text-white' : ''}
                 `}
@@ -88,6 +104,14 @@ function Review() {
             )
           })}
         </div>
+
+         {/* Show Points Earned */}
+         <div className="mt-4 text-lg font-semibold">
+          <p className={`${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+            {isCorrect ? '🎉 Correct! +4 points' : '❌ Wrong! 0 points'}
+          </p>
+        </div>
+</div>
       </div>
       {/* Navigation Buttons */}
       <PrevNextButtons
