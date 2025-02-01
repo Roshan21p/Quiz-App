@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import QuestionCard from '../Components/QuestionCard'
 import Options from '../Components/Options'
+import PrevNextButtons from '../Components/PrevNextButtons'
 
 function Quiz() {
   const navigate = useNavigate()
@@ -11,6 +12,7 @@ function Quiz() {
   const [score, setScore] = useState(0)
   const [selectedAnswers, setSelectedAnswers] = useState({})
   const [isLoading, setIsLoading] = useState(true)
+  console.log('questions', questions)
 
   useEffect(() => {
     const fetchQuizData = async () => {
@@ -19,18 +21,31 @@ function Quiz() {
           `${import.meta.env.VITE_BACKEND_URL}/api/quiz`
         )
         if (response?.data?.success) {
-          setQuestions(response?.data?.data?.questions)
+          const fetchedQuestions = response?.data?.data?.questions
+          setQuestions(fetchedQuestions)
+          sessionStorage.setItem(
+            'quizQuestions',
+            JSON.stringify(fetchedQuestions)
+          )
         }
         setIsLoading(false)
       } catch (error) {
         console.error('Error fetching quiz data:', error)
       }
     }
-    fetchQuizData()
+    // First, check if we have stored questions in sessionStorage
+    const storedQuestions = JSON.parse(sessionStorage.getItem('quizQuestions'))
+
+    if (storedQuestions && storedQuestions.length > 0) {
+      setQuestions(storedQuestions)
+      setIsLoading(false)
+    } else {
+      fetchQuizData()
+    }
   }, [])
 
   useEffect(() => {
-    // Load progress from localStorage
+    // Load progress from sessionStorage
     const savedProgress = JSON.parse(sessionStorage.getItem('quizProgress'))
     if (savedProgress) {
       setSelectedAnswers(savedProgress.selectedAnswers || {})
@@ -62,7 +77,7 @@ function Quiz() {
     }
     setSelectedAnswers(updatedAnswers)
 
-    // Save progress in localStorage
+    // Save progress in sessionStorage
     sessionStorage.setItem(
       'quizProgress',
       JSON.stringify({
@@ -86,17 +101,14 @@ function Quiz() {
 
   if (isLoading) {
     return (
-      <div className="text-center text-xl pt-10 bg-gradient-to-br from-blue-500 to-indigo-700 min-h-screen">
+      <div className="text-center text-xl pt-10 bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen">
         Loading Quiz...
       </div>
     )
   }
   return (
-    <div className="mx-auto px-2 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-700 text-white min-h-screen">
-      <div
-        className="bg-white text-black text-
-            lg  py-4 rounded-lg shadow-lg w-full sm:w-3/4 lg:w-1/2  text-center"
-      >
+    <div className="mx-auto px-2 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white min-h-screen">
+      <div className="bg-white text-black text-lg py-4 rounded-lg shadow-lg w-full sm:w-3/4 lg:w-1/2 text-center">
         {questions.length > 0 && (
           <>
             <QuestionCard
@@ -112,23 +124,25 @@ function Quiz() {
           </>
         )}
       </div>
-      <div className="flex justify-between w-full  sm:w-3/4 lg:w-1/2  mt-6">
-        <button
-          className={`px-4 py-2 rounded-md shadow-md transition-all ${currentQuestionIndex === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer'}`}
-          onClick={handlePrev}
-          disabled={currentQuestionIndex === 0}
-        >
-          Previous
-        </button>
 
-        <button
-          className={`px-8 py-2 rounded-md shadow-md transition-all ${currentQuestionIndex === questions.length - 1 ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600 cursor-pointer'}`}
-          onClick={handleNext}
-          disabled={currentQuestionIndex === questions.length - 1}
-        >
-          Next
-        </button>
-      </div>
+      <PrevNextButtons
+        currentQuestionIndex={currentQuestionIndex}
+        totalQuestions={questions.length}
+        handlePrev={handlePrev}
+        handleNext={handleNext}
+        isPrevDisabled={currentQuestionIndex === 0}
+        isNextDisabled={currentQuestionIndex === questions.length - 1}
+      />
+      {Object.keys(selectedAnswers).length === questions.length && (
+        <div className=" mt-6">
+          <button
+            className="px-4 py-2 font-bold text-xl rounded-md bg-amber-500 shadow-md transition-all cursor-pointer"
+            onClick={() => navigate('/result')}
+          >
+            Submit
+          </button>
+        </div>
+      )}
     </div>
   )
 }

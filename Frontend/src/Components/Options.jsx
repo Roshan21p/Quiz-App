@@ -5,7 +5,7 @@ function Options({ options, onAnswerClick, selectedOption }) {
         return (
           <button
             key={option?.id}
-            className="bg-white flex items-center text-black text-left hover:bg-blue-200  py-2 px-4 rounded-lg border border-indigo-500 shadow-md transition-all"
+            className="bg-white flex items-center text-black text-left hover:bg-blue-200 cursor-pointer  py-2 px-4 rounded-lg border border-indigo-500 shadow-md transition-all"
             onClick={() => onAnswerClick(option)}
           >
             <div className="flex items-center justify-center w-6 h-6 rounded-full border-2 border-indigo-500 mr-2">

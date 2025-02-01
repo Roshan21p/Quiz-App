@@ -6,15 +6,15 @@ function Layout({ children }) {
     <div className="flex flex-col">
       {/* Navbar */}
       <nav className="bg-white drop-shadow-lg">
-        <div className="container  mx-auto px-2 sm:px-12 py-4 flex justify-between items-center">
+        <div className="container  mx-auto px-2  md:px-12 py-4 flex justify-between items-center">
           {/* Logo & App Name */}
           <Link to="/" className="flex items-center space-x-3">
             <img
               src={QuizLogo}
               alt="Quiz logo"
-              className="w-12 h-12 rounded-full"
+              className="w-12 h-12 rounded-full opacity-90"
             />
-            <p className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-indigo-700 bg-clip-text text-transparent">
+            <p className="text-4xl font-bold bg-gradient-to-br from-blue-500 to-purple-600 bg-clip-text text-transparent">
               QuizApp
             </p>
           </Link>

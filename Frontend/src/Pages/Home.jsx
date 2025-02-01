@@ -6,7 +6,7 @@ const Home = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-700 text-white min-h-[90vh]">
+      <div className="flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white min-h-[90vh]">
         <h1 className="text-2xl sm:text-4xl text-center font-bold mb-4">
           Welcome to the Ultimate Quiz!
         </h1>
@@ -15,7 +15,7 @@ const Home = () => {
         </p>
 
         <button
-          className="bg-yellow-400 text-gray-900 px-6 py-3 text-xl font-semibold rounded-lg shadow-md hover:bg-yellow-300 transition duration-300"
+          className="bg-yellow-400 text-gray-900 px-6 py-3 text-xl font-semibold rounded-lg shadow-md hover:bg-yellow-300 transition duration-300 cursor-pointer"
           onClick={() => navigate('/quiz')}
         >
           Start Quiz 🚀
