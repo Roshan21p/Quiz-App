@@ -3,6 +3,8 @@ import Home from './Pages/Home'
 import Quiz from './Pages/Quiz'
 import Result from './Pages/Result'
 import Review from './Pages/Review'
+import AboutUs from './Pages/AboutUs'
+import ContactUs from './Pages/ContactUs'
 
 function App() {
   return (
@@ -12,6 +14,8 @@ function App() {
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/result" element={<Result />} />
         <Route path="/review" element={<Review />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/contact" element={<ContactUs />} />
       </Routes>
     </>
   )

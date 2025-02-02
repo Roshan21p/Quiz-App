@@ -20,7 +20,7 @@ function Result() {
     if (savedProgress) {
       let correctScore = 0,
         wrongScore = 0
-      const totalQues = quizQuestions.length
+      const totalQues = quizQuestions?.length
       correctScore = savedProgress?.score / 4
       wrongScore = totalQues - correctScore
 
@@ -35,7 +35,7 @@ function Result() {
     } else {
       setQuiz({
         score: 0,
-        totalQuestions: quizQuestions.length,
+        totalQuestions: quizQuestions?.length,
         correctAnswers: 0,
         wrongAnswers: 10
       })
@@ -78,7 +78,7 @@ function Result() {
 
         <p className="text-xl mt-2 font-semibold">
           Total Score:{' '}
-          <span className="font-bold text-blue-600">{quiz.score}</span>
+          <span className="font-bold text-blue-600">{quiz?.score}</span>
         </p>
         <p className="text-lg mt-2 font-semibold">
           Total Questions:{' '}
@@ -104,6 +104,14 @@ function Result() {
             onClick={() => navigate('/review')}
           >
             📑 Review Answers
+          </button>
+        </div>
+        <div>
+          <button
+            className="w-full sm:w-auto bg-green-500 px-6 py-3 text-lg font-semibold rounded-lg shadow-md transition-all hover:bg-green-600 cursor-pointer mt-4"
+            onClick={() => navigate('/')}
+          >
+            🏠 Go Back Home
           </button>
         </div>
       </div>

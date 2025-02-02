@@ -25,7 +25,7 @@ function Review() {
   }, [])
 
   function handleNext() {
-    if (quiz.currentQuestionIndex < quiz.questions.length - 1) {
+    if (quiz?.currentQuestionIndex < quiz?.questions?.length - 1) {
       setQuiz((prevState) => ({
         ...prevState,
         currentQuestionIndex: prevState.currentQuestionIndex + 1
@@ -34,7 +34,7 @@ function Review() {
   }
 
   function handlePrev() {
-    if (quiz.currentQuestionIndex > 0) {
+    if (quiz?.currentQuestionIndex > 0) {
       setQuiz((prevState) => ({
         ...prevState,
         currentQuestionIndex: prevState.currentQuestionIndex - 1
@@ -42,7 +42,7 @@ function Review() {
     }
   }
 
-  if (quiz.questions?.length === 0) {
+  if (quiz?.questions?.length === 0) {
     return (
       <div className="text-center text-xl pt-10 bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen">
         Loading Review...
@@ -50,7 +50,7 @@ function Review() {
     )
   }
 
-  const currentQuestion = quiz.questions[quiz.currentQuestionIndex]
+  const currentQuestion = quiz?.questions[quiz?.currentQuestionIndex]
   const userSelectedOption = quiz.selectedAnswers[currentQuestion?.id] // User's selected answer
   const isCorrect = userSelectedOption?.is_correct || false
 
@@ -61,7 +61,7 @@ function Review() {
         {isCorrect && (
           <div className="absolute inset-0 flex  items-center justify-center overflow-hidden">
             <Confetti
-              key={quiz.currentQuestionIndex}
+              key={quiz?.currentQuestionIndex}
               width={window.innerWidth}
               height={window.innerHeight}
               numberOfPieces={300}
@@ -78,7 +78,7 @@ function Review() {
           {/* Display Question */}
           <div className="text-left mb-6">
             <h3 className="text-lg font-semibold">
-              {currentQuestion.description}
+              {currentQuestion?.description}
             </h3>
           </div>
 

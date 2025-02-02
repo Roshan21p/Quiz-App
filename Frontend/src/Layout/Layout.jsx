@@ -6,18 +6,34 @@ function Layout({ children }) {
     <div className="flex flex-col">
       {/* Navbar */}
       <nav className="bg-white drop-shadow-lg">
-        <div className=" mx-auto px-2  md:px-12 py-2 flex justify-between items-center">
+        <div className="mx-auto px-2 md:px-12 py-2 flex justify-between items-center">
           {/* Logo & App Name */}
           <Link to="/" className="flex items-center space-x-3">
             <img
               src={QuizLogo}
               alt="Quiz logo"
-              className="w-12 h-12 rounded-full opacity-90"
+              className="w-8 h-8 sm:w-12 sm:h-12 rounded-full opacity-90"
             />
-            <p className="text-4xl font-bold bg-gradient-to-br from-blue-500 to-purple-600 bg-clip-text text-transparent">
+            <p className="text-xl sm:text-4xl font-bold bg-gradient-to-br from-blue-500 to-purple-600 bg-clip-text text-transparent">
               QuizApp
             </p>
           </Link>
+
+          {/* Right-aligned Links (About and Contact) */}
+          <div className="flex space-x-6 sm:mr-10 text-lg">
+            <Link
+              to="/about"
+              className="text-purple-500 hover:text-blue-500 transition-all duration-300"
+            >
+              About
+            </Link>
+            <Link
+              to="/contact"
+              className="text-purple-500 hover:text-blue-500 transition-all duration-300"
+            >
+              Contact
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -42,4 +58,5 @@ function Layout({ children }) {
     </div>
   )
 }
+
 export default Layout

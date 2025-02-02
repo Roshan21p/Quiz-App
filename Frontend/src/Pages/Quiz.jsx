@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import QuestionCard from '../Components/QuestionCard'
 import Options from '../Components/Options'
 import PrevNextButtons from '../Components/PrevNextButtons'
+import toast from 'react-hot-toast'
 
 function Quiz() {
   const navigate = useNavigate()
@@ -13,10 +14,10 @@ function Quiz() {
     currentQuestionIndex: 0,
     score: 0,
     selectedAnswers: {},
-    isLoading: true,
+    isLoading: true
   })
 
- const [timeLeft, setTimeLeft] = useState(600) // Separate state for time left
+  const [timeLeft, setTimeLeft] = useState(300) // Separate state for time left
 
   function formatTime(seconds) {
     const minutes = Math.floor(seconds / 60)
@@ -56,11 +57,11 @@ function Quiz() {
       setQuiz((prevState) => ({
         ...prevState,
         score: savedProgress.score || 0,
-        selectedAnswers: savedProgress.selectedAnswers || {},
+        selectedAnswers: savedProgress.selectedAnswers || {}
       }))
     }
 
-    if(storedTime) {
+    if (storedTime) {
       setTimeLeft(storedTime)
     }
     // First, check if we have stored questions in sessionStorage
@@ -77,27 +78,29 @@ function Quiz() {
     }
   }
 
-
   useEffect(() => {
-    session()  
+    session()
   }, [])
 
-  useEffect(() => {    
+  useEffect(() => {
     if (!quiz?.isLoading && quiz?.questions?.length > 0) {
       if (timeLeft === 0) {
         handleSubmit()
       } else {
+        if (timeLeft === 60) {
+          toast('Hurry up! Only 1 minute left to complete the quiz!')
+        }
         // save time left in session storage
         sessionStorage.setItem('quizTime', JSON.stringify(timeLeft))
         const countdown = setInterval(() => {
           setTimeLeft((prevTime) => prevTime - 1)
         }, 1000)
 
-         //Cleanup the interval on component unmount
-         return () => clearInterval(countdown)
+        //Cleanup the interval on component unmount
+        return () => clearInterval(countdown)
       }
     }
-  },[timeLeft,quiz?.isLoading,quiz?.questions])
+  }, [timeLeft, quiz?.isLoading, quiz?.questions])
 
   function handleAnswer(selectedOption) {
     const questionId = quiz?.questions[quiz?.currentQuestionIndex]?.id
@@ -139,11 +142,11 @@ function Quiz() {
 
   function handleNext() {
     if (quiz?.currentQuestionIndex < quiz?.questions?.length - 1) {
-        setQuiz((prevState) => ({ 
-          ...prevState, 
-          currentQuestionIndex: prevState.currentQuestionIndex + 1 
-        }))
-      }
+      setQuiz((prevState) => ({
+        ...prevState,
+        currentQuestionIndex: prevState.currentQuestionIndex + 1
+      }))
+    }
   }
 
   function handlePrev() {
@@ -152,12 +155,12 @@ function Quiz() {
         ...prevState,
         currentQuestionIndex: prevState.currentQuestionIndex - 1
       }))
-  }
+    }
   }
 
   function handleSubmit() {
     //  clearInterval(timerRef.current);
-     sessionStorage.removeItem('quizTime')
+    sessionStorage.removeItem('quizTime')
     navigate('/result')
   }
 
@@ -177,13 +180,17 @@ function Quiz() {
         {quiz?.questions?.length > 0 && (
           <>
             <QuestionCard
-              question={quiz?.questions[quiz?.currentQuestionIndex]?.description}
+              question={
+                quiz?.questions[quiz?.currentQuestionIndex]?.description
+              }
             />
             <Options
               options={quiz?.questions[quiz?.currentQuestionIndex]?.options}
               onAnswerClick={handleAnswer}
               selectedOption={
-                quiz?.selectedAnswers[quiz?.questions[quiz?.currentQuestionIndex]?.id] || null
+                quiz?.selectedAnswers[
+                  quiz?.questions[quiz?.currentQuestionIndex]?.id
+                ] || null
               }
             />
           </>
@@ -195,7 +202,8 @@ function Quiz() {
         handlePrev={handlePrev}
         handleNext={handleNext}
       />
-      {Object.keys(quiz?.selectedAnswers)?.length === quiz?.questions?.length && (
+      {Object.keys(quiz?.selectedAnswers)?.length ===
+        quiz?.questions?.length && (
         <div className=" mt-6">
           <button
             className="px-4 py-2 font-bold text-xl rounded-md bg-amber-500 shadow-md transition-all cursor-pointer"
