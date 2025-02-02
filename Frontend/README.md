@@ -29,7 +29,9 @@ QuizApp is an interactive quiz application designed to test users' knowledge on 
 
 **Backend**: The backend (API) is deployed on Render. It is responsible for fetching quiz data and sending it back to the frontend for display.
   - [Backend URL](https://quiz-app-niqd.onrender.com) 
+
  -> To see the fetched quiz data, visit: BackendUrl/api/quiz
+
  -> Render take time to restart the server approximately 40 sec.
 
 
@@ -37,7 +39,7 @@ QuizApp is an interactive quiz application designed to test users' knowledge on 
 
 1.Clone the repository
 
-**Using command** -> https://github.com/Roshan21p/Quiz-App.git
+**Using command** -> git clone https://github.com/Roshan21p/Quiz-App.git
 
 **For Frontend**
 1. cd quizapp
