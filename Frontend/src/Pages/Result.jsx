@@ -3,32 +3,42 @@ import { useNavigate } from 'react-router-dom'
 
 function Result() {
   const navigate = useNavigate()
-  const [score, setScore] = useState(0)
-  const [selectedAnswers, setSelectedAnswers] = useState({})
-  const [totalQuestions, setTotalQuestions] = useState(0)
-  const [correctAnswers, setCorrectAnswers] = useState(0)
-  const [wrongAnswers, setWrongAnswers] = useState(0)
+
+  const [quiz, setQuiz] = useState({
+    score: 0,
+    selectedAnswers: {},
+    totalQuestions: 0,
+    correctAnswers: 0,
+    wrongAnswers: 0
+  })
 
   useEffect(() => {
     const savedProgress = JSON.parse(sessionStorage.getItem('quizProgress'))
+    const quizQuestions = JSON.parse(sessionStorage.getItem('quizQuestions'))
+    console.log(savedProgress, savedProgress === true)
+
     if (savedProgress) {
-      setSelectedAnswers(savedProgress.selectedAnswers || {})
-      setScore(savedProgress.score || 0)
-      const totalQues = Object.keys(savedProgress.selectedAnswers || {}).length
-      setTotalQuestions(totalQues)
+      let correctScore = 0,
+        wrongScore = 0
+      const totalQues = quizQuestions.length
+      correctScore = savedProgress?.score / 4
+      wrongScore = totalQues - correctScore
 
-      let correct = 0,
-        wrong = 0
-      Object.values(savedProgress.selectedAnswers).forEach((answer) => {
-        if (answer.is_correct) {
-          correct++
-        } else {
-          wrong++
-        }
+      setQuiz((prevState) => ({
+        ...prevState,
+        score: savedProgress?.score,
+        selectedAnswers: savedProgress?.selectedAnswers,
+        totalQuestions: totalQues,
+        correctAnswers: correctScore,
+        wrongAnswers: wrongScore
+      }))
+    } else {
+      setQuiz({
+        score: 0,
+        totalQuestions: quizQuestions.length,
+        correctAnswers: 0,
+        wrongAnswers: 10
       })
-
-      setCorrectAnswers(correct)
-      setWrongAnswers(wrong)
     }
   }, [])
 
@@ -37,16 +47,16 @@ function Result() {
     navigate('/quiz')
   }
 
-    // Dynamic score message based on correct answers percentage
-    const percentage = (correctAnswers / totalQuestions) * 100
-    let scoreMessage = ''
-    if (percentage >= 80) {
-      scoreMessage = 'Excellent! 🎉 You aced it!'
-    } else if (percentage >= 50) {
-      scoreMessage = 'Good job! 👍 You passed!'
-    } else {
-      scoreMessage = 'Keep trying! 💪 You can do better!'
-    }
+  // Dynamic score message based on correct answers percentage
+  const percentage = (quiz?.correctAnswers / quiz?.totalQuestions) * 100
+  let scoreMessage = ''
+  if (percentage >= 80) {
+    scoreMessage = 'Excellent! 🎉 You aced it!'
+  } else if (percentage >= 50) {
+    scoreMessage = 'Good job! 👍 You passed!'
+  } else {
+    scoreMessage = 'Keep trying! 💪 You can do better!'
+  }
 
   return (
     <div className="flex mx-auto flex-col p-4 items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white">
@@ -55,8 +65,8 @@ function Result() {
           🎉 Quiz Result 🎉
         </h2>
 
-          {/* Score Progress Bar */}
-          <div className="w-full bg-gray-200 rounded-full h-4 mt-4 mb-6">
+        {/* Score Progress Bar */}
+        <div className="w-full bg-gray-200 rounded-full h-4 mt-4 mb-6">
           <div
             className="bg-green-500 h-4 rounded-full transition-all duration-500"
             style={{ width: `${percentage}%` }}
@@ -64,21 +74,21 @@ function Result() {
         </div>
 
         {/* Dynamic Message Based on Score */}
-        <p className="text-xl font-semibold">
-          {scoreMessage}
-        </p>
+        <p className="text-xl font-semibold">{scoreMessage}</p>
 
         <p className="text-xl mt-2 font-semibold">
-          Total Score: <span className="font-bold text-blue-600">{score}</span>
+          Total Score:{' '}
+          <span className="font-bold text-blue-600">{quiz.score}</span>
         </p>
         <p className="text-lg mt-2 font-semibold">
-          Total Questions: <span className="font-bold">{totalQuestions}</span>
+          Total Questions:{' '}
+          <span className="font-bold">{quiz?.totalQuestions}</span>
         </p>
         <p className="text-green-600 font-bold mt-2">
-          ✅ Correct Answers: {correctAnswers}
+          ✅ Correct Answers: {quiz?.correctAnswers}
         </p>
         <p className="text-red-500 font-bold">
-          ❌ Wrong Answers: {wrongAnswers}
+          ❌ Wrong Answers: {quiz?.wrongAnswers}
         </p>
 
         {/* Buttons Section */}

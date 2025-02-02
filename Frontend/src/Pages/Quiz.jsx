@@ -7,83 +7,103 @@ import PrevNextButtons from '../Components/PrevNextButtons'
 
 function Quiz() {
   const navigate = useNavigate()
-  const [questions, setQuestions] = useState([])
-  const [currentQuestionIndex, setcurrentQuestionIndex] = useState(0)
-  const [score, setScore] = useState(0)
-  const [selectedAnswers, setSelectedAnswers] = useState({})
-  const [isLoading, setIsLoading] = useState(true)
-  const [timeLeft, setTimeLeft] = useState(600) // 10 minutes in seconds
 
-  function formatTime(seconds){
-    const minutes = Math.floor(seconds/60)
+  const [quiz, setQuiz] = useState({
+    questions: [],
+    currentQuestionIndex: 0,
+    score: 0,
+    selectedAnswers: {},
+    isLoading: true,
+  })
+
+ const [timeLeft, setTimeLeft] = useState(600) // Separate state for time left
+
+  function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60)
     const remainingSeconds = seconds % 60
     return `${minutes < 10 ? `0${minutes}` : minutes}:${remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds}`
   }
-  useEffect(() => {
-    const fetchQuizData = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/quiz`
+
+  async function fetchQuizData() {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/quiz`
+      )
+      if (response?.data?.success) {
+        const fetchedQuestions = response?.data?.data?.questions
+        sessionStorage.setItem(
+          'quizQuestions',
+          JSON.stringify(fetchedQuestions)
         )
-        if (response?.data?.success) {
-          const fetchedQuestions = response?.data?.data?.questions
-          setQuestions(fetchedQuestions)
-          sessionStorage.setItem(
-            'quizQuestions',
-            JSON.stringify(fetchedQuestions)
-          )
-        }
-        setIsLoading(false)
-      } catch (error) {
-        console.error('Error fetching quiz data:', error)
+        setQuiz((prevState) => ({
+          ...prevState,
+          questions: fetchedQuestions,
+          isLoading: false
+        }))
       }
+    } catch (error) {
+      console.error('Error fetching quiz data:', error)
+      navigate('/')
+    }
+  }
+
+  function session() {
+    // Load progress from sessionStorage
+    const savedProgress = JSON.parse(sessionStorage.getItem('quizProgress'))
+    const storedTime = JSON.parse(sessionStorage.getItem('quizTime'))
+
+    if (savedProgress) {
+      setQuiz((prevState) => ({
+        ...prevState,
+        score: savedProgress.score || 0,
+        selectedAnswers: savedProgress.selectedAnswers || {},
+      }))
+    }
+
+    if(storedTime) {
+      setTimeLeft(storedTime)
     }
     // First, check if we have stored questions in sessionStorage
     const storedQuestions = JSON.parse(sessionStorage.getItem('quizQuestions'))
 
     if (storedQuestions && storedQuestions.length > 0) {
-      setQuestions(storedQuestions)
-      setIsLoading(false)
+      setQuiz((prevState) => ({
+        ...prevState,
+        questions: storedQuestions,
+        isLoading: false
+      }))
     } else {
       fetchQuizData()
     }
-  }, [])
+  }
+
 
   useEffect(() => {
-    // Load progress from sessionStorage
-    const savedProgress = JSON.parse(sessionStorage.getItem('quizProgress'))
-    if (savedProgress) {
-      setSelectedAnswers(savedProgress.selectedAnswers || {})
-      setScore(savedProgress.score || 0)
-    }
-
-    const storedTime = JSON.parse(sessionStorage.getItem('quizTime'));
-    if(storedTime) {
-      setTimeLeft(storedTime)
-    }
+    session()  
   }, [])
 
-  useEffect(() => {
-    if(timeLeft === 0){
-      sessionStorage.removeItem('quizTime')
-      navigate('/result');
-    } else{
-      // save time left in session storage
-      sessionStorage.setItem('quizTime', JSON.stringify(timeLeft));
-      const timer = setInterval(() => {
-        setTimeLeft((prevTime) => prevTime - 1)
-      }, 1000)
+  useEffect(() => {    
+    if (!quiz?.isLoading && quiz?.questions?.length > 0) {
+      if (timeLeft === 0) {
+        handleSubmit()
+      } else {
+        // save time left in session storage
+        sessionStorage.setItem('quizTime', JSON.stringify(timeLeft))
+        const countdown = setInterval(() => {
+          setTimeLeft((prevTime) => prevTime - 1)
+        }, 1000)
 
-      // Cleanup the interval on component unmount
-     return () => clearInterval(timer)
+         //Cleanup the interval on component unmount
+         return () => clearInterval(countdown)
+      }
     }
-  },[timeLeft]);
+  },[timeLeft,quiz?.isLoading,quiz?.questions])
 
   function handleAnswer(selectedOption) {
-    const questionId = questions[currentQuestionIndex].id
-    const prevAnswer = selectedAnswers[questionId] // Get previous answer
+    const questionId = quiz?.questions[quiz?.currentQuestionIndex]?.id
+    const prevAnswer = quiz?.selectedAnswers[questionId] // Get previous answer
 
-    let newScore = score
+    let newScore = quiz?.score
 
     // If user previously selected the correct answer, subtract 4 points
     if (prevAnswer?.is_correct) {
@@ -91,17 +111,21 @@ function Quiz() {
     }
 
     // If the new selected option is correct, add 4 points
-    if (selectedOption.is_correct) {
+    if (selectedOption?.is_correct) {
       newScore += 4
     }
 
-    setScore(newScore) // Update the score
     // Store new answer
     const updatedAnswers = {
-      ...selectedAnswers,
+      ...quiz?.selectedAnswers,
       [questionId]: selectedOption
     }
-    setSelectedAnswers(updatedAnswers)
+
+    setQuiz((prevState) => ({
+      ...prevState,
+      score: newScore,
+      selectedAnswers: updatedAnswers
+    }))
 
     // Save progress in sessionStorage
     sessionStorage.setItem(
@@ -114,18 +138,30 @@ function Quiz() {
   }
 
   function handleNext() {
-    if (currentQuestionIndex < questions.length - 1) {
-      setcurrentQuestionIndex(currentQuestionIndex + 1)
-    }
+    if (quiz?.currentQuestionIndex < quiz?.questions?.length - 1) {
+        setQuiz((prevState) => ({ 
+          ...prevState, 
+          currentQuestionIndex: prevState.currentQuestionIndex + 1 
+        }))
+      }
   }
 
   function handlePrev() {
-    if (currentQuestionIndex > 0) {
-      setcurrentQuestionIndex(currentQuestionIndex - 1)
-    }
+    if (quiz?.currentQuestionIndex > 0) {
+      setQuiz((prevState) => ({
+        ...prevState,
+        currentQuestionIndex: prevState.currentQuestionIndex - 1
+      }))
+  }
   }
 
-  if (isLoading) {
+  function handleSubmit() {
+    //  clearInterval(timerRef.current);
+     sessionStorage.removeItem('quizTime')
+    navigate('/result')
+  }
+
+  if (quiz?.isLoading) {
     return (
       <div className="text-center text-xl pt-10 bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen">
         Loading Quiz...
@@ -135,17 +171,19 @@ function Quiz() {
   return (
     <div className="mx-auto px-2 flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white min-h-screen">
       <div className="bg-white text-black text-lg py-4 rounded-lg shadow-lg w-full sm:w-3/4 lg:w-1/2 text-center">
-      <div className="text-xl font-semibold mb-4">Time Left: {formatTime(timeLeft)}</div>
-        {questions.length > 0 && (
+        <div className="text-xl font-semibold mb-4">
+          Time Left: {formatTime(timeLeft)}
+        </div>
+        {quiz?.questions?.length > 0 && (
           <>
             <QuestionCard
-              question={questions[currentQuestionIndex].description}
+              question={quiz?.questions[quiz?.currentQuestionIndex]?.description}
             />
             <Options
-              options={questions[currentQuestionIndex].options}
+              options={quiz?.questions[quiz?.currentQuestionIndex]?.options}
               onAnswerClick={handleAnswer}
               selectedOption={
-                selectedAnswers[questions[currentQuestionIndex].id] || null
+                quiz?.selectedAnswers[quiz?.questions[quiz?.currentQuestionIndex]?.id] || null
               }
             />
           </>
@@ -153,18 +191,15 @@ function Quiz() {
       </div>
 
       <PrevNextButtons
-        currentQuestionIndex={currentQuestionIndex}
-        totalQuestions={questions.length}
+        quiz={quiz}
         handlePrev={handlePrev}
         handleNext={handleNext}
-        isPrevDisabled={currentQuestionIndex === 0}
-        isNextDisabled={currentQuestionIndex === questions.length - 1}
       />
-      {Object.keys(selectedAnswers).length === questions.length && (
+      {Object.keys(quiz?.selectedAnswers)?.length === quiz?.questions?.length && (
         <div className=" mt-6">
           <button
             className="px-4 py-2 font-bold text-xl rounded-md bg-amber-500 shadow-md transition-all cursor-pointer"
-            onClick={() => navigate('/result')}
+            onClick={handleSubmit}
           >
             Submit
           </button>

@@ -8,14 +8,19 @@ const Home = () => {
   return (
     <Layout>
       <div className="flex flex-col  items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white min-h-screen px-4 mt-0">
-        <img src={homeImage} className="w-full md:w-1/2 mb-6 md:mb-0" alt="Quiz Illustration" />
-        
+        <img
+          src={homeImage}
+          className="w-full md:w-1/2 mb-6 md:mb-0"
+          alt="Quiz Illustration"
+        />
+
         <div className="text-center md:ml-8">
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">
             Challenge Your Mind with the Ultimate Quiz!
           </h1>
           <p className="text-lg mb-6">
-            Explore a variety of exciting questions, test your knowledge, and climb the leaderboard. Are you ready to prove your skills?
+            Explore a variety of exciting questions, test your knowledge, and
+            climb the leaderboard. Are you ready to prove your skills?
           </p>
 
           <button
