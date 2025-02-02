@@ -17,6 +17,11 @@ function Result() {
     navigate('/quiz')
   }
 
+  function handleGoHome() {
+    sessionStorage.removeItem('quizProgress')
+    navigate('/')
+  }
+
   // Dynamic score message based on correct answers percentage
   const percentage = (quiz?.correctAnswers / quiz?.totalQuestions) * 100
   let scoreMessage = ''
@@ -108,7 +113,7 @@ function Result() {
         <div>
           <button
             className="w-full sm:w-auto bg-green-500 px-6 py-3 text-lg font-semibold rounded-lg shadow-md transition-all hover:bg-green-600 cursor-pointer mt-4"
-            onClick={() => navigate('/')}
+            onClick={handleGoHome}
           >
             🏠 Go Back Home
           </button>
