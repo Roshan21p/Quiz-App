@@ -11,19 +11,6 @@ function Review() {
     currentQuestionIndex: 0
   })
 
-  useEffect(() => {
-    const storedQuestions = JSON.parse(sessionStorage.getItem('quizQuestions'))
-    const savedProgress = JSON.parse(sessionStorage.getItem('quizProgress'))
-
-    if (storedQuestions || savedProgress) {
-      setQuiz((prevState) => ({
-        ...prevState,
-        questions: storedQuestions || [],
-        selectedAnswers: savedProgress?.selectedAnswers || {}
-      }))
-    }
-  }, [])
-
   function handleNext() {
     if (quiz?.currentQuestionIndex < quiz?.questions?.length - 1) {
       setQuiz((prevState) => ({
@@ -42,6 +29,26 @@ function Review() {
     }
   }
 
+
+
+  const currentQuestion = quiz?.questions[quiz?.currentQuestionIndex]
+  const userSelectedOption = quiz?.selectedAnswers[currentQuestion?.id] // User's selected answer
+  const isCorrect = userSelectedOption?.is_correct || false
+
+  useEffect(() => {
+    const storedQuestions = JSON.parse(sessionStorage.getItem('quizQuestions'))
+    const savedProgress = JSON.parse(sessionStorage.getItem('quizProgress'))
+
+    if (storedQuestions || savedProgress) {
+      setQuiz((prevState) => ({
+        ...prevState,
+        questions: storedQuestions || [],
+        selectedAnswers: savedProgress?.selectedAnswers || {}
+      }))
+    }
+  }, [])
+
+  
   if (quiz?.questions?.length === 0) {
     return (
       <div className="text-center text-xl pt-10 bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen">
@@ -49,10 +56,6 @@ function Review() {
       </div>
     )
   }
-
-  const currentQuestion = quiz?.questions[quiz?.currentQuestionIndex]
-  const userSelectedOption = quiz.selectedAnswers[currentQuestion?.id] // User's selected answer
-  const isCorrect = userSelectedOption?.is_correct || false
 
   return (
     <div className="mx-auto  px-2 flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white">

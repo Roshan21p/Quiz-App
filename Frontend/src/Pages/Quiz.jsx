@@ -78,30 +78,6 @@ function Quiz() {
     }
   }
 
-  useEffect(() => {
-    session()
-  }, [])
-
-  useEffect(() => {
-    if (!quiz?.isLoading && quiz?.questions?.length > 0) {
-      if (timeLeft === 0) {
-        handleSubmit()
-      } else {
-        if (timeLeft === 60) {
-          toast('Hurry up! Only 1 minute left to complete the quiz!')
-        }
-        // save time left in session storage
-        sessionStorage.setItem('quizTime', JSON.stringify(timeLeft))
-        const countdown = setInterval(() => {
-          setTimeLeft((prevTime) => prevTime - 1)
-        }, 1000)
-
-        //Cleanup the interval on component unmount
-        return () => clearInterval(countdown)
-      }
-    }
-  }, [timeLeft, quiz?.isLoading, quiz?.questions])
-
   function handleAnswer(selectedOption) {
     const questionId = quiz?.questions[quiz?.currentQuestionIndex]?.id
     const prevAnswer = quiz?.selectedAnswers[questionId] // Get previous answer
@@ -159,10 +135,34 @@ function Quiz() {
   }
 
   function handleSubmit() {
-    //  clearInterval(timerRef.current);
+
     sessionStorage.removeItem('quizTime')
     navigate('/result')
   }
+
+  useEffect(() => {
+    session()
+  }, [])
+
+  useEffect(() => {
+    if (!quiz?.isLoading && quiz?.questions?.length > 0) {
+      if (timeLeft === 0) {
+        handleSubmit()
+      } else {
+        if (timeLeft === 60) {
+          toast('Hurry up! Only 1 minute left to complete the quiz!')
+        }
+        // save time left in session storage
+        sessionStorage.setItem('quizTime', JSON.stringify(timeLeft))
+        const countdown = setInterval(() => {
+          setTimeLeft((prevTime) => prevTime - 1)
+        }, 1000)
+
+        //Cleanup the interval on component unmount
+        return () => clearInterval(countdown)
+      }
+    }
+  }, [timeLeft, quiz?.isLoading, quiz?.questions])
 
   if (quiz?.isLoading) {
     return (

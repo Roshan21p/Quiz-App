@@ -12,10 +12,25 @@ function Result() {
     wrongAnswers: 0
   })
 
+  function handleRestart() {
+    sessionStorage.removeItem('quizProgress')
+    navigate('/quiz')
+  }
+
+  // Dynamic score message based on correct answers percentage
+  const percentage = (quiz?.correctAnswers / quiz?.totalQuestions) * 100
+  let scoreMessage = ''
+  if (percentage >= 80) {
+    scoreMessage = 'Excellent! 🎉 You aced it!'
+  } else if (percentage >= 50) {
+    scoreMessage = 'Good job! 👍 You passed!'
+  } else {
+    scoreMessage = 'Keep trying! 💪 You can do better!'
+  }
+
   useEffect(() => {
     const savedProgress = JSON.parse(sessionStorage.getItem('quizProgress'))
     const quizQuestions = JSON.parse(sessionStorage.getItem('quizQuestions'))
-    console.log(savedProgress, savedProgress === true)
 
     if (savedProgress) {
       let correctScore = 0,
@@ -42,25 +57,9 @@ function Result() {
     }
   }, [])
 
-  function handleRestart() {
-    sessionStorage.removeItem('quizProgress')
-    navigate('/quiz')
-  }
-
-  // Dynamic score message based on correct answers percentage
-  const percentage = (quiz?.correctAnswers / quiz?.totalQuestions) * 100
-  let scoreMessage = ''
-  if (percentage >= 80) {
-    scoreMessage = 'Excellent! 🎉 You aced it!'
-  } else if (percentage >= 50) {
-    scoreMessage = 'Good job! 👍 You passed!'
-  } else {
-    scoreMessage = 'Keep trying! 💪 You can do better!'
-  }
-
   return (
     <div className="flex mx-auto flex-col p-4 items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-      <div className="bg-white text-black p-8 rounded-xl shadow-xl w-full sm:w-3/4 lg:w-1/3 text-center">
+      <div className="bg-white text-black p-8 rounded-xl shadow-xl w-ful sm:w-3/4 lg:w-1/2 text-center">
         <h2 className="text-3xl font-extrabold text-indigo-700 mb-4">
           🎉 Quiz Result 🎉
         </h2>
